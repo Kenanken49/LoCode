@@ -1,0 +1,76 @@
+/* ── Chunk 7 · approval cards (the security gate) ──────────────────────
+   Floats over the chat on purpose: a decision is never something you can
+   scroll away from. Newest card sits on top.                          */
+
+#approvals {
+  position: fixed;
+  top: calc(var(--header-h) + var(--s3));
+  right: var(--s4);
+  width: min(420px, calc(100vw - 2 * var(--s4)));
+  max-height: calc(100dvh - var(--header-h) - var(--s6));
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;             /* newest is inserted first, so it sits on top */
+  gap: var(--s3);
+  z-index: 50;
+  pointer-events: none;                /* only the cards themselves catch clicks */
+}
+
+.ap-card {
+  pointer-events: auto;
+  background: var(--panel);
+  border: 1px solid var(--warn);
+  border-left: 4px solid var(--warn);
+  border-radius: var(--r2);
+  box-shadow: var(--shadow);
+  padding: var(--s3) var(--s4) var(--s4);
+  animation: fade-in var(--mid) var(--ease);
+  min-width: 0;
+}
+.ap-card.out { animation: fade-out var(--fade) var(--ease) forwards; }
+.ap-card.import { border-color: var(--accent2); border-left-color: var(--accent2); }
+
+.ap-title {
+  display: flex; align-items: baseline; gap: var(--s2);
+  font: 700 var(--fs-sm)/1.3 var(--sans);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--warn);
+  margin-bottom: var(--s2);
+}
+.ap-card.import .ap-title { color: var(--accent2); }
+.ap-warn { font-size: var(--fs-md); }
+
+.ap-url {
+  display: block;
+  font: var(--fs-sm)/1.45 var(--mono);
+  color: var(--text);
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r1);
+  padding: var(--s2);
+  margin-bottom: var(--s2);
+  word-break: break-all;
+  max-height: 5.6em;
+  overflow: auto;
+}
+
+.ap-detail { font-size: var(--fs-sm); color: var(--dim); margin-bottom: var(--s3); overflow-wrap: anywhere; }
+.ap-expiry { color: var(--faint); font: var(--fs-xs)/1 var(--mono); }
+
+.ap-actions { display: flex; gap: var(--s2); margin-bottom: var(--s2); }
+.ap-actions .btn { flex: 1 1 0; justify-content: center; padding: 8px 10px; }
+#ap-allow { background: var(--ok); border-color: var(--ok); color: var(--ink-on-accent); font-weight: 650; }
+#ap-allow:hover { filter: brightness(1.1); }
+#ap-deny { border-color: var(--border2); color: var(--dim); }
+#ap-deny:hover { border-color: var(--err); color: var(--err); }
+
+.ap-remember { display: flex; flex-direction: column; gap: var(--s1); }
+.ap-remember label {
+  display: flex; align-items: flex-start; gap: var(--s2);
+  font-size: var(--fs-xs); color: var(--dim); cursor: pointer;
+}
+.ap-remember code { font-family: var(--mono); color: var(--text); background: var(--panel2); padding: 0 4px; border-radius: 4px; }
+.ap-remember input { width: 14px; height: 14px; margin-top: 2px; accent-color: var(--accent); flex: none; }
+
+.ap-note { font-size: var(--fs-xs); color: var(--faint); margin-top: var(--s2); }

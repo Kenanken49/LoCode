@@ -1,0 +1,62 @@
+/* ── Chunk 9 / 10 · shared modal shell (file preview + server logs) ──── */
+
+#modal {
+  position: fixed;
+  inset: 0;
+  background: var(--scrim);
+  display: grid;
+  place-items: stretch;
+  padding: var(--s5);
+  z-index: 60;
+  animation: fade-in var(--fast) var(--ease);
+}
+#modal[hidden] { display: none; }
+
+.modal-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  background: var(--panel);
+  border: 1px solid var(--border2);
+  border-radius: var(--r3);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.modal-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+}
+
+#modal-title {
+  font-size: var(--fs-sm);
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+#modal-title .sub { color: var(--faint); }
+
+#modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--s4);
+  background: var(--code-bg);
+  color: var(--dim);
+  font-size: 12.5px;
+  line-height: 1.55;
+  white-space: pre-wrap;          /* one <pre>: 5000 lines stay cheap */
+  overflow-wrap: anywhere;
+  tab-size: 2;
+}
+#modal-body.logs { color: var(--dim); }

@@ -1,0 +1,45 @@
+/* ── Chunk 4 · workspace tree ─────────────────────────────────────────── */
+
+.tree {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  padding: 0 var(--s2) var(--s3);
+  font-size: var(--fs-sm);
+}
+
+.tree-node {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: 3px var(--s2);
+  border-radius: var(--r1);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+  line-height: 1.45;
+}
+.tree-node:hover { background: var(--panel2); }
+.tree-node .glyph { flex: none; width: 10px; color: var(--faint); font-size: 10px; }
+.tree-node .name { overflow: hidden; text-overflow: ellipsis; }
+
+.tree-node.dir { color: var(--text); font-weight: 650; }
+.tree-node.dir .glyph { color: var(--dim); }
+.tree-node.dir[data-open="0"] .glyph { opacity: .8; }
+
+.tree-node.file { color: var(--dim); }
+.tree-node.file .glyph { color: var(--faint); }
+.tree-node.file:hover { color: var(--text); }
+
+.tree-children { display: block; }
+.tree-children[hidden] { display: none; }
+
+.tree-count {
+  padding: var(--s2) var(--s3);
+  color: var(--faint);
+  font: var(--fs-xs)/1 var(--mono);
+  border-top: 1px solid var(--border);
+  flex: none;
+}

@@ -1,0 +1,16 @@
+# runtime state — created by server.py on first run, never source
+__pycache__/
+*.pyc
+
+# the frontend is source in ui/src; node_modules and ui/dist are build output
+ui/node_modules/
+ui/dist/
+
+.venv/
+workspace/
+inbox/
+projects/            # created by New project
+.locode/
+.server.log
+.server.pid
+.sandbox-rootfs/

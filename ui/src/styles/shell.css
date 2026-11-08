@@ -1,0 +1,94 @@
+/* ── Chunk 2 · app shell & layout grid ─────────────────────────────────
+   rail (52px) │ stage: header (56px) / sidebar (270px) + main column. The
+   column is a flex stack: thread grows and scrolls, preview keeps its height,
+   composer pins. The rail spans the full height, so the header starts to its
+   right and the workspace drawer opens beside it. */
+
+#app {
+  display: flex;
+  height: 100dvh;
+  min-height: 0;
+}
+
+#stage {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#topbar { height: var(--header-h); flex: none; }
+
+#layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  background: var(--bg);
+}
+
+/* ── sidebar ─────────────────────────────────────────────────────────── */
+#sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+}
+
+.side-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s2);
+  padding: var(--s3) var(--s3) var(--s2);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.icon-btn {
+  display: inline-grid; place-items: center;
+  width: 28px; height: 28px; flex: none;
+  background: transparent; border: 1px solid transparent;
+  border-radius: var(--r1); color: var(--dim); font-size: var(--fs-md);
+}
+.icon-btn:hover { background: var(--panel2); color: var(--text); border-color: var(--border); }
+
+/* ── main column ─────────────────────────────────────────────────────── */
+#col {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+#messages {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding: var(--s5) var(--s4) var(--s4);
+}
+
+#composer { flex: none; border-top: 1px solid var(--border); background: var(--bg2); padding: var(--s3) var(--s4); }
+
+/* when the drawer-style sidebar is opened on a narrow screen it floats
+   over the column instead of reflowing it (Chunk 12 turns it on) */
+#app[data-sidebar="open"] #sidebar {
+  position: fixed;
+  inset: var(--header-h) auto 0 var(--rail-w);
+  width: min(290px, 84vw);
+  z-index: 40;
+  box-shadow: var(--shadow);
+  animation: slide-in var(--mid) var(--ease);
+}
+
+@keyframes slide-in { from { transform: translateX(-100%); } to { transform: none; } }

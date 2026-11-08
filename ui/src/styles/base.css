@@ -1,0 +1,102 @@
+/* ── Chunk 1 · base styles, reset, scrollbars, shared primitives ────────── */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: var(--fs-body)/var(--lh-body) var(--sans);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;                 /* the shell owns scrolling (Chunk 2) */
+}
+
+code, pre, .mono { font-family: var(--mono); }
+
+h1, h2, h3, h4 { font-weight: 650; line-height: 1.3; }
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: var(--r1);
+}
+
+button { cursor: pointer; transition: background var(--fast) var(--ease),
+                                      border-color var(--fast) var(--ease); }
+button:disabled { opacity: .45; cursor: not-allowed; }
+
+input:focus-visible, select:focus-visible, textarea:focus-visible,
+button:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+::selection { background: var(--accent-soft); color: var(--text); }
+
+/* scrollbars: ours, not the OS's */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px;
+                            border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: var(--border2); }
+* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+
+/* ── shared primitives used across chunks ─────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  padding: 7px 12px; background: var(--panel2); border: 1px solid var(--border);
+  border-radius: var(--r1); color: var(--text); font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+.btn:hover { background: var(--panel3); border-color: var(--border2); }
+.btn-primary { background: var(--accent); border-color: var(--accent); color: var(--ink-on-accent); font-weight: 600; }
+.btn-primary:hover { background: var(--accent2); border-color: var(--accent2); color: var(--ink-on-accent); }
+.btn-danger { color: var(--err); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--dim); }
+.btn-ghost:hover { color: var(--text); background: var(--panel2); }
+
+.pill {
+  display: inline-flex; align-items: center; gap: var(--s1);
+  padding: 2px 8px; border-radius: var(--rp);
+  background: var(--accent-soft); border: 1px solid var(--accent-line);
+  color: var(--text); font-size: var(--fs-xs); font-weight: 600;
+  letter-spacing: .02em; text-transform: lowercase; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; max-width: 12ch;
+}
+
+.badge {
+  font-family: var(--mono); font-size: var(--fs-xs); font-weight: 700;
+  padding: 2px 7px; border-radius: var(--rp); border: 1px solid var(--border);
+  color: var(--dim); background: var(--panel2); white-space: nowrap;
+}
+.badge.ok        { color: var(--ok);   background: var(--ok-soft);   border-color: var(--ok); }
+.badge.err       { color: var(--err);  background: var(--err-soft);  border-color: var(--err); }
+.badge.warn      { color: var(--warn); background: var(--warn-soft); border-color: var(--warn); }
+.badge.running   { color: var(--run);  background: var(--run-soft);  border-color: var(--run); }
+
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex: none; }
+
+.muted  { color: var(--dim); }
+.faint  { color: var(--faint); }
+.hidden { display: none !important; }
+/* the display: rules below (and .btn, .pill …) would otherwise beat the UA's
+   [hidden] default and leave a hidden element on screen */
+[hidden] { display: none !important; }
+
+.empty {
+  display: grid; place-items: center; height: 100%; min-height: 84px;
+  color: var(--faint); font-size: var(--fs-sm); font-style: italic;
+}
+
+@keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes fade-out { to { opacity: 0; transform: translateY(-4px); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

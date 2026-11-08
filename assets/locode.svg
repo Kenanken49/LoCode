@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="LOCODE">
+  <defs>
+    <linearGradient id="lc" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7aa2ff"/>
+      <stop offset="1" stop-color="#4a6cf0"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="url(#lc)"/>
+  <text x="128" y="171" font-family="DejaVu Sans, Inter, Helvetica, Arial, sans-serif"
+        font-size="112" font-weight="700" letter-spacing="-4" text-anchor="middle"
+        fill="#08101f">LC</text>
+</svg>

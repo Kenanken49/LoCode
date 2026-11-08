@@ -1,0 +1,130 @@
+/* ── Chunk 5 · chat thread & message bubbles ──────────────────────────── */
+
+#messages > * {
+  width: 100%;
+  max-width: var(--thread-w);      /* long messages never break the column */
+  margin: 0 auto var(--s4);
+}
+
+.msg-label {
+  font: 700 var(--fs-xs)/1 var(--sans);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: var(--s2);
+}
+
+.bubble {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: var(--s3) var(--s4);
+  overflow-wrap: anywhere;
+}
+
+.msg-user .bubble { background: var(--panel2); }
+.msg-user .msg-label { color: var(--dim); }
+
+.msg-assistant .msg-label { color: var(--accent); }
+.msg-assistant .bubble { background: var(--bg2); border-color: var(--border); }
+
+/* assistant content is a stack: markdown text, then its tool cards */
+.msg-assistant .content > *:last-child { margin-bottom: 0; }
+.msg-assistant .content p { margin: 0 0 var(--s3); }
+.msg-assistant .content h1, .msg-assistant .content h2, .msg-assistant .content h3,
+.msg-assistant .content h4 { margin: var(--s4) 0 var(--s2); }
+.msg-assistant .content h1 { font-size: var(--fs-xl); }
+.msg-assistant .content h2 { font-size: var(--fs-lg); }
+.msg-assistant .content h3 { font-size: var(--fs-md); }
+
+.msg-assistant .content ul, .msg-assistant .content ol { margin: 0 0 var(--s3) 1.3em; }
+.msg-assistant .content li { margin: 2px 0; }
+.msg-assistant .content blockquote {
+  border-left: 3px solid var(--border2);
+  padding-left: var(--s3);
+  color: var(--dim);
+  margin: 0 0 var(--s3);
+}
+.msg-assistant .content hr { border: 0; border-top: 1px solid var(--border); margin: var(--s4) 0; }
+
+.content code {
+  font-size: 12.5px;
+  background: var(--panel3);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+.content pre {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r1);
+  padding: var(--s3);
+  overflow-x: auto;
+  margin: 0 0 var(--s3);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+.content pre code { background: none; padding: 0; font-size: inherit; }
+
+/* tool cards live under the text, in their own block (Chunk 6) */
+.tools { display: flex; flex-direction: column; gap: var(--s2); margin-top: var(--s3); }
+.tools:empty { display: none; }
+
+.msg-error .bubble { background: var(--err-soft); border-color: var(--err); color: var(--err); }
+
+.composer-row {
+  display: flex; align-items: center; gap: var(--s3);
+  margin-top: var(--s2);
+}
+.composer-row .hint { color: var(--faint); font-size: var(--fs-xs); flex: 1 1 auto; }
+
+/* tok/s: tabular digits so the number does not jitter the row as it changes,
+   accent while it is live and muted once it is only the last measurement. */
+.tps {
+  font: var(--fs-xs)/1 var(--mono);
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+  white-space: nowrap;
+  flex: none;
+}
+.tps[data-live="0"] { color: var(--faint); }
+
+.status {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  font: var(--fs-xs)/1 var(--mono);
+  color: var(--dim);
+  white-space: nowrap;
+}
+.status[data-kind="think"] { color: var(--accent); }
+.status[data-kind="run"]   { color: var(--warn); }
+.status[data-kind="err"]   { color: var(--err); }
+.status[data-kind="ok"]    { color: var(--ok); }
+
+/* One animated signal for "something is happening": the dot throws a ring of the
+   status colour while a turn or a tool runs, and holds perfectly still when the
+   platform has nothing in flight — no text needed for the idle case. */
+.status[data-working="1"] .dot { animation: status-pulse 1.1s ease-out infinite; }
+@keyframes status-pulse {
+  0%   { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  70%  { box-shadow: 0 0 0 5px transparent; opacity: 0.6; }
+  100% { box-shadow: 0 0 0 0 transparent; opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .status[data-working="1"] .dot { animation-duration: 2.4s; }
+}
+
+#input {
+  display: block;
+  width: 100%;
+  resize: vertical;
+  min-height: 44px;
+  max-height: 34vh;
+  padding: var(--s3);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  font: var(--fs-body)/1.5 var(--sans);
+}
+#input::placeholder { color: var(--faint); }
+
+@keyframes msg-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.msg { animation: msg-in var(--mid) var(--ease); }

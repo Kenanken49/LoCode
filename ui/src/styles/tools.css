@@ -1,0 +1,60 @@
+/* ── Chunk 6 · tool activity cards ─────────────────────────────────────
+   Collapsed by default: one header line per call. Errors auto-expand. */
+
+.tool-card {
+  border: 1px solid var(--border);
+  border-radius: var(--r1);
+  background: var(--panel);
+  overflow: hidden;
+}
+.tool-card.err { border-color: var(--err); }
+.tool-card.ok { border-color: var(--border); }
+
+.tool-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: var(--s2) var(--s3);
+  cursor: pointer;
+  user-select: none;
+  min-width: 0;
+}
+.tool-head:hover { background: var(--panel2); }
+
+.tool-caret { flex: none; color: var(--faint); font-size: 10px; transition: transform var(--fast) var(--ease); }
+.tool-card.open .tool-caret { transform: rotate(90deg); }
+
+.tool-name { flex: none; font: 650 var(--fs-sm)/1.4 var(--mono); color: var(--text); }
+.tool-args {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--dim);
+  font: var(--fs-xs)/1.4 var(--mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tool-diff { flex: none; font: var(--fs-xs)/1 var(--mono); color: var(--dim); white-space: nowrap; }
+.tool-diff .add { color: var(--add); }
+.tool-diff .del { color: var(--del); }
+
+.tool-body {
+  display: none;
+  border-top: 1px solid var(--border);
+  padding: var(--s2) var(--s3);
+  max-height: 280px;            /* long results scroll, they do not push */
+  overflow: auto;
+  font: var(--fs-xs)/1.5 var(--mono);
+  color: var(--dim);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--code-bg);
+}
+.tool-card.open .tool-body { display: block; }
+
+/* running badge pulses so a stalled turn is visible at a glance */
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 var(--run-soft); }
+  50% { opacity: .55; box-shadow: 0 0 0 4px transparent; }
+}
+.badge.running { animation: pulse 1.1s var(--ease) infinite; }

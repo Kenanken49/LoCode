@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LOCODE — local coding agent</title>
+<script>
+  /* set the saved skin before first paint so a reload never flashes the other theme */
+  try { document.documentElement.dataset.theme = localStorage.getItem('locode-theme') || 'dark'; } catch (e) {}
+</script>
+</head>
+<body>
+<!-- Chunk 2's layout is rendered by src/App.tsx; this is only the mount point. -->
+<div id="root"></div>
+<script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

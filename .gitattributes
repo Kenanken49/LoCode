@@ -1,0 +1,9 @@
+# A CRLF shell script fails on its first line in Git Bash ("$'\r': command not
+# found"), and Windows installs commonly set core.autocrlf=true. Pin the scripts
+# (and everything else a person edits) to LF so a fresh checkout on any OS is
+# runnable as-is.
+.gitattributes text eol=lf
+*.sh   text eol=lf
+*.ps1  text eol=lf
+*.md   text eol=lf
+*.py   text eol=lf

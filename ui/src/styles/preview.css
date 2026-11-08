@@ -1,0 +1,46 @@
+/* ── Chunk 11 · live preview pane ──────────────────────────────────────
+   Sits between the thread and the composer at 42vh. Closing the pane hides
+   the iframe only; the dev server keeps running and the header keeps Stop. */
+
+#preview-pane {
+  flex: none;
+  height: var(--preview-h);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border2);
+  background: var(--bg2);
+}
+#preview-pane[hidden] { display: none; }
+
+.pv-bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  padding: var(--s2) var(--s3) var(--s2) var(--s4);
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  min-width: 0;
+}
+
+.pv-url {
+  font-size: var(--fs-xs);
+  color: var(--dim);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.pv-url::before { content: '▶ '; color: var(--ok); }
+
+.pv-actions { display: flex; align-items: center; gap: var(--s1); flex: none; }
+
+#pv-frame {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  border: 0;
+  background: var(--panel);
+}

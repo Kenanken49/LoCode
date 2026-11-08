@@ -1,0 +1,120 @@
+/* ── Chunk 3 · header bar ───────────────────────────────────────────────
+   brand │ project bar (pills + dev command + preview) │ actions │ status  */
+
+#topbar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  padding: 0 var(--s4);
+  background: var(--panel);
+  border-bottom: 1px solid var(--border);
+  position: relative;          /* anchor for the settings popover */
+  z-index: 30;
+}
+
+.brand { display: flex; align-items: center; gap: var(--s2); flex: none; }
+
+.brand-mark {
+  display: grid; place-items: center;
+  width: 26px; height: 26px; border-radius: var(--r1);
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: var(--ink-on-accent);
+  font: 700 var(--fs-xs)/1 var(--mono);
+  letter-spacing: -.04em;
+}
+
+.brand-name { font-weight: 700; letter-spacing: .1em; font-size: var(--fs-md); }
+
+/* project bar takes the remaining width and truncates instead of wrapping */
+.project-bar {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+.project-bar .btn { flex: none; }
+
+/* The bar's shrink contract: pills keep their natural width and the container
+   clips, the dev command shrinks to its ellipsis, and the ▶ Preview / ■ Stop
+   buttons never shrink — chunk 11's entry point must stay reachable. Without
+   `flex: none` on the pills a 5+ tag project squeezed every pill to mush. */
+.stack-pills { display: flex; align-items: center; gap: var(--s2); min-width: 0; overflow: hidden; flex: 0 1 auto; }
+.stack-pills .pill { flex: none; background: var(--panel2); border-color: var(--border2); color: var(--dim); }
+.stack-pills .pill.framework { background: var(--accent-soft); border-color: var(--accent-line); color: var(--text); }
+
+.devcmd {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: var(--fs-sm);
+  color: var(--dim);
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r1);
+  padding: 3px 8px;
+  max-width: 34ch;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.devcmd::before { content: "$ "; color: var(--faint); }
+.devcmd[data-empty="1"] { display: none; }
+
+.actions { display: flex; align-items: center; gap: var(--s2); flex: none; }
+
+/* network consent readout */
+.net {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  font: var(--fs-xs)/1 var(--mono);
+  color: var(--dim);
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--rp);
+  background: var(--panel2);
+  white-space: nowrap;
+}
+.net[data-net="off"]      { color: var(--dim); }
+.net[data-net="off"] .dot      { background: var(--faint); }
+.net[data-net="ask"]      { color: var(--warn); border-color: var(--warn); background: var(--warn-soft); }
+.net[data-net="ask"] .dot { background: var(--warn); }
+.net[data-net="auto-safe"]   { color: var(--run); border-color: var(--run); background: var(--run-soft); }
+.net[data-net="auto-safe"] .dot { background: var(--run); }
+
+/* sandbox readout: which backend confines commands, and whether it caps memory/CPU.
+   Same shape as the net pill; the ✓/✕ glyph is the caps answer, the word is the mode. */
+.sbx {
+  display: inline-flex; align-items: center; gap: var(--s2);
+  font: var(--fs-xs)/1 var(--mono);
+  color: var(--dim);
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--rp);
+  background: var(--panel2);
+  white-space: nowrap;
+}
+.sbx .caps { font-weight: 700; }
+.sbx .lim  { color: var(--dim); }
+.sbx[data-box="docker"] .lim,
+.sbx[data-box="namespace"] .lim { color: inherit; opacity: .75; }
+.sbx[data-box="off"]          { color: var(--dim); }
+.sbx[data-box="off"] .dot     { background: var(--faint); }
+.sbx[data-box="docker"]       { color: var(--run); border-color: var(--run); background: var(--run-soft); }
+.sbx[data-box="docker"] .dot  { background: var(--run); }
+.sbx[data-box="namespace"]      { color: var(--accent); border-color: var(--accent-line); background: var(--accent-soft); }
+.sbx[data-box="namespace"] .dot { background: var(--accent); }
+.sbx[data-caps="0"] .caps     { color: var(--warn); }
+
+/* the chip is a control: clicking it restarts the sandbox */
+.sbx { cursor: pointer; }
+.sbx:hover:not(:disabled) { border-color: var(--border2); }
+.sbx:active:not(:disabled) { transform: translateY(1px); }
+/* `off` is not actionable, but a dimmed chip would read as a rendering fault */
+.sbx:disabled { opacity: 1; cursor: default; }
+.sbx .note {
+  max-width: 18ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.sbx[data-note="ok"] .note   { color: var(--ok); }
+.sbx[data-note="err"] .note  { color: var(--err); }
+.sbx[data-note="busy"] .dot  { background: var(--warn); }
+

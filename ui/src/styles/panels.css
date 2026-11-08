@@ -1,0 +1,186 @@
+/* ── left rail, slide-over panels, composer controls ──────────────────────
+   The rail is the app's only navigation: Home, Integrations, Settings. Panels
+   open beside it over a scrim; nothing here reflows the chat column. */
+
+#rail {
+  flex: none;
+  width: var(--rail-w);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--s2) 0;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  position: relative;
+  z-index: 46;
+}
+
+#rail .mark {
+  display: grid; place-items: center;
+  width: 28px; height: 28px; margin-bottom: var(--s2);
+  border-radius: var(--r1);
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: var(--ink-on-accent);
+  font: 700 var(--fs-xs)/1 var(--mono);
+  letter-spacing: -.04em;
+  user-select: none;
+}
+
+.rail-btn {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  font-size: var(--fs-lg); line-height: 1;
+  color: var(--dim);
+  background: transparent; border: 1px solid transparent; border-radius: var(--r1);
+}
+.rail-btn:hover { color: var(--text); background: var(--panel2); }
+.rail-btn[aria-current="page"] {
+  color: var(--text); background: var(--accent-soft); border-color: var(--accent-line);
+}
+
+/* ── panels ─────────────────────────────────────────────────────────── */
+#panel-scrim {
+  position: fixed; inset: 0;
+  background: var(--scrim);
+  z-index: 44;
+  animation: fade-in var(--fade) var(--ease);
+}
+
+#panel {
+  position: fixed;
+  top: var(--header-h); bottom: 0; left: var(--rail-w);
+  /* sized against the rail, not the viewport: 92vw alone ran 44px past the right
+     edge on a 360px phone and took the close button with it */
+  width: min(420px, calc(100vw - var(--rail-w) - var(--s2)));
+  display: flex; flex-direction: column;
+  background: var(--bg2);
+  border-right: 1px solid var(--border2);
+  box-shadow: var(--shadow);
+  z-index: 45;
+  animation: slide-in var(--mid) var(--ease);
+}
+
+.panel-head {
+  flex: none;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--s2);
+  padding: var(--s3) var(--s3) var(--s2);
+  border-bottom: 1px solid var(--border);
+  font-size: var(--fs-xs); font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--dim);
+}
+
+/* min-width:0 + hidden x: a provider row's reason text is long, and without the
+   clamp it widened the panel past the viewport and pushed the close button off
+   screen. The row's own name/reason columns ellipsize instead. */
+.panel-body {
+  flex: 1 1 auto; min-width: 0; min-height: 0;
+  overflow-y: auto; overflow-x: hidden;
+  padding: var(--s3) var(--s3) var(--s5);
+  display: flex; flex-direction: column; gap: var(--s4);
+}
+
+.panel-sec { display: flex; flex-direction: column; gap: var(--s2); min-width: 0; }
+.panel-sec > h3 { font-size: var(--fs-sm); letter-spacing: .06em; text-transform: uppercase; }
+.panel-sec .btn { align-self: flex-start; }
+.panel-note { color: var(--faint); font-size: var(--fs-sm); }
+.panel-field { display: flex; gap: var(--s2); }
+.panel-field input {
+  flex: 1 1 auto; min-width: 0; padding: 6px 8px;
+  font-family: var(--mono); font-size: var(--fs-xs);
+}
+
+/* provider keys: name + state, then a one-way input. The value never comes
+   back from the engine, so the placeholder is all there is to show. */
+.key-row { display: flex; flex-direction: column; gap: var(--s1); min-width: 0; }
+.key-head {
+  display: flex; justify-content: space-between; gap: var(--s2);
+  font-size: var(--fs-xs); color: var(--dim);
+}
+.key-head .mono { overflow: hidden; text-overflow: ellipsis; }
+.key-state { color: var(--faint); white-space: nowrap; }
+.key-state.on { color: var(--ok); }
+.key-row .panel-field input { font-family: var(--mono); font-size: var(--fs-xs); }
+
+/* provider groups: a dot, a name and the honest reason when it cannot run */
+.prov { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.prov-head {
+  display: flex; justify-content: space-between; gap: var(--s2);
+  padding: var(--s1) 2px; border-bottom: 1px solid var(--border);
+  font-size: var(--fs-xs); color: var(--dim);
+}
+.prov-row {
+  display: grid; grid-template-columns: 8px minmax(0, 1fr) auto; align-items: center;
+  gap: var(--s2); width: 100%; padding: 6px;
+  background: transparent; border: 1px solid transparent; border-radius: var(--r1);
+  font-size: var(--fs-sm); text-align: left;
+}
+.prov-row:hover:not(:disabled) { background: var(--panel2); border-color: var(--border); }
+.prov-row[aria-current="true"] { background: var(--accent-soft); border-color: var(--accent-line); }
+.prov-row:disabled { color: var(--faint); cursor: default; opacity: 1; }
+.prov-row .dot.on { background: var(--ok); }
+.prov-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prov-why {
+  max-width: 16ch; color: var(--faint); font-size: var(--fs-xs);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ── composer: model picker + upload ───────────────────────────────── */
+.composer-top { display: flex; align-items: center; gap: var(--s2); margin-bottom: var(--s2); }
+
+.model-select {
+  flex: 0 1 auto; min-width: 0; max-width: 46ch;
+  padding: 5px 8px;
+  font-family: var(--mono); font-size: var(--fs-xs);
+  background: var(--panel2); border: 1px solid var(--border); border-radius: var(--r1);
+}
+.model-select option:disabled { color: var(--faint); }
+
+#attach {
+  width: 26px; height: 26px; flex: none;
+  font-size: var(--fs-lg); line-height: 1;
+  background: var(--panel2); border: 1px solid var(--border); border-radius: var(--r1);
+  color: var(--dim);
+}
+#attach:hover:not(:disabled) { color: var(--text); border-color: var(--border2); }
+
+/* local model server: what answers, the two paths it resolved, and the log a
+   failed start wrote its reason into */
+.lm-head { display: flex; align-items: center; gap: var(--s2); min-width: 0; font-size: var(--fs-xs); }
+.lm-head .mono { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--dim); }
+.lm-state { margin-left: auto; color: var(--faint); white-space: nowrap; }
+.lm-state.on { color: var(--ok); }
+.lm-field { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lm-field > span { color: var(--faint); font-size: var(--fs-xs); }
+.lm-field input {
+  padding: 5px 8px; font-family: var(--mono); font-size: var(--fs-xs);
+}
+.lm-actions { display: flex; gap: var(--s2); }
+.panel-sec .lm-actions .btn { align-self: auto; }
+.lm-err { color: var(--err, #e5484d); font-size: var(--fs-xs); overflow-wrap: anywhere; }
+.lm-log {
+  max-height: 150px; overflow: auto; margin: 0; padding: 6px 8px;
+  background: var(--panel2); border: 1px solid var(--border); border-radius: var(--r1);
+  font: var(--fs-xs)/1.45 var(--mono); color: var(--dim); white-space: pre-wrap;
+}
+.lm-log-wrap summary {
+  cursor: pointer; color: var(--faint); font-size: var(--fs-xs);
+}
+.lm-log-wrap[open] summary { margin-bottom: var(--s1); }
+
+/* found GGUFs: one row each, with the size it costs and which one is loaded */
+.lm-models { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.lm-model {
+  display: grid; grid-template-columns: 8px minmax(0, 1fr) auto;
+  align-items: center; gap: var(--s2);
+  width: 100%; padding: 5px 6px;
+  background: transparent; border: 1px solid transparent; border-radius: var(--r1);
+  font-size: var(--fs-sm); text-align: left;
+}
+.lm-model:hover { background: var(--panel2); border-color: var(--border); }
+.lm-model[aria-current="true"] { background: var(--accent-soft); border-color: var(--accent-line); }
+.lm-model .dot.on { background: var(--ok); }
+.lm-model-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lm-model-size { color: var(--faint); font-size: var(--fs-xs); white-space: nowrap; }

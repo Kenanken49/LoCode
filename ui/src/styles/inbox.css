@@ -1,0 +1,71 @@
+/* ── Chunk 8 · inbox (quarantine) drawer ─────────────────────────────── */
+
+#inbox {
+  position: fixed;
+  inset: var(--header-h) 0 0 auto;
+  width: min(360px, 92vw);
+  background: var(--panel);
+  border-left: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  transform: translateX(100%);
+  transition: transform var(--mid) var(--ease);
+}
+#inbox.open { transform: none; }                 /* slides over the chat, never reflows it */
+#inbox[hidden] { display: none; }
+
+.inbox-head {
+  flex: none;
+  display: flex; align-items: center; justify-content: space-between; gap: var(--s2);
+  padding: var(--s3) var(--s4);
+  border-bottom: 1px solid var(--border);
+  font: 700 var(--fs-xs)/1 var(--sans);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+.inbox-actions { display: flex; gap: var(--s1); }
+
+.inbox-items {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--s3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s3);
+}
+
+.inbox-item {
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  background: var(--bg2);
+  padding: var(--s3);
+  min-width: 0;
+}
+.inbox-name {
+  font: var(--fs-sm)/1.3 var(--mono);
+  color: var(--text);
+  word-break: break-all;
+  margin-bottom: var(--s1);
+}
+.inbox-meta { font-size: var(--fs-xs); color: var(--faint); margin-bottom: var(--s3); }
+
+.inbox-btns { display: flex; gap: var(--s2); }
+.inbox-btns .btn { flex: 1 1 0; justify-content: center; }
+.inbox-import { border-color: var(--accent-line); color: var(--accent); }
+.inbox-import:hover { background: var(--accent-soft); }
+.inbox-delete { border-color: var(--border2); color: var(--err); }
+.inbox-delete:hover { background: var(--err-soft); border-color: var(--err); }
+
+.inbox-foot {
+  flex: none;
+  padding: var(--s2) var(--s4) var(--s3);
+  font: var(--fs-xs)/1.4 var(--mono);
+  color: var(--faint);
+  border-top: 1px solid var(--border);
+  word-break: break-all;
+}

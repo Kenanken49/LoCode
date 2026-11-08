@@ -1,0 +1,110 @@
+/* ── responsive breakpoints ───────────────────────────────────────────
+   ≥1200 default · 900–1199 narrow rails · 600–899 drawer sidebar ·
+   <600 icons only.
+
+   The rail is always present, and the header now carries only project context
+   and the sandbox/net readouts, so the old rules that shrank a row of header
+   buttons are gone — they were collapsing controls that moved to the panels. */
+
+/* ── 900–1199px ─────────────────────────────────────────────────────── */
+@media (max-width: 1199px) {
+  :root { --sidebar-w: 220px; }
+
+  /* pills truncate to 3 + a counter (the counter and the extras exist in the
+     DOM already; here they are just shown/hidden). */
+  .stack-pills .pill.more { display: inline-flex; }
+  .stack-pills .pill.more .e { display: none; }
+  .stack-pills .pill.extra { display: none; }
+
+  /* preview leaves the column and floats over it */
+  #preview-pane {
+    position: fixed;
+    inset: var(--header-h) 0 0 var(--rail-w);
+    height: auto;
+    z-index: 42;
+    border-top: 1px solid var(--border2);
+    box-shadow: var(--shadow);
+  }
+  .pv-bar { background: var(--panel2); }
+}
+
+@media (min-width: 1200px) {
+  .stack-pills .pill.more { display: none; }
+  .stack-pills .pill.extra { display: inline-flex; }
+  /* the laptop band has room to spare, so show a real dev command in full */
+  .devcmd { max-width: 52ch; }
+}
+
+/* ── 600–899px ──────────────────────────────────────────────────────── */
+@media (max-width: 899px) {
+  #layout { grid-template-columns: 1fr; }
+  #sidebar { display: none; }
+  #app[data-sidebar="open"] #sidebar { display: flex; }   /* hamburger drawer */
+  #menu-btn { display: inline-grid; }
+
+  /* project bar → a single pill + an ellipsis counter */
+  .stack-pills .pill:not(.lead):not(.more) { display: none; }
+  .stack-pills .pill.more .n { display: none; }
+  .stack-pills .pill.more .e { display: inline; }
+
+  #approvals { right: 0; left: 0; width: auto; max-width: none; top: calc(var(--header-h) + var(--s2)); }
+  #inbox { width: min(340px, 100vw); }
+  .devcmd { max-width: 18ch; }
+  #preview-pane { position: fixed; inset: var(--header-h) 0 0 var(--rail-w); height: auto; z-index: 42; }
+}
+
+@media (min-width: 900px) {
+  #menu-btn { display: none; }
+  /* a 2–3-tag project needs no counter at ≥900px; a 4+ one still does */
+  .stack-pills .pill.more.few { display: none; }
+}
+
+/* ── <600px ─────────────────────────────────────────────────────────── */
+@media (max-width: 599px) {
+  :root { --rail-w: 44px; }
+  #topbar { padding: 0 var(--s2); gap: var(--s2); }
+  .net, .sbx { font-size: 10px; padding: 4px 6px; }
+  #stack-pills, #dev-command { display: none; }
+  /* the net chip becomes its dot alone at this band; the readout stays in the
+     title attribute and in #net-text (hidden, not deleted) for AT */
+  #topbar .net { padding: 5px; gap: 0; }
+  #net-text { display: none; }
+  /* keep the sandbox mode and the caps glyph: they are the two facts this chip
+     exists to carry, so only the "sandbox: " prefix goes */
+  #topbar .sbx { padding: 5px; gap: 4px; }
+  #topbar .sbx .lab { display: none; }
+  #server-name { display: none; }
+  /* ▶ Preview / ■ Stop stay reachable — Chunk 11's entry point — and keep their
+     labels now that the rail took the header buttons away; only the server name
+     goes, because it carries the port nobody reads on a phone. */
+  #preview-toggle, #server-stop { padding: 6px 8px; }
+
+  #messages { padding: var(--s3) var(--s2); }
+  .bubble { padding: var(--s2) var(--s3); border-radius: var(--r1); }
+
+  /* tool cards collapse to one line */
+  .tool-head { padding: 6px var(--s2); gap: var(--s1); }
+  .tool-diff, .tool-card .tool-args { display: none; }
+  .tool-body { max-height: 40vh; }
+
+  #approvals { max-height: 60vh; top: auto; bottom: 0; padding: var(--s2); }
+  .ap-actions { flex-direction: column; }
+
+  #composer { padding: var(--s2); }
+  #input { min-height: 40px; font-size: var(--fs-md); }
+  .composer-row .hint { display: none; }
+  .model-select { flex: 1 1 auto; max-width: none; }
+
+  /* the panel keeps clear of the rail at every width (its width is computed
+     against --rail-w in panels.css) so the rail stays clickable while it is open */
+
+  #modal { padding: 0; }
+  .modal-card { max-width: none; border-radius: 0; height: 100%; }
+}
+
+/* ── <480px ─────────────────────────────────────────────────────────── */
+@media (max-width: 479px) {
+  /* on the narrowest phones the chip keeps the backend and the caps glyph; the
+     numbers move to the title rather than squeezing the row into a scroll */
+  #topbar .sbx .lim { display: none; }
+}

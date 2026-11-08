@@ -1,0 +1,99 @@
+/* ── Chunk 1 · design tokens ───────────────────────────────────────────────
+   The only file in the app allowed to name a color. Every other stylesheet
+   reads these. `[data-theme="light"]` on <html> swaps the same names. */
+
+:root {
+  /* type */
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+  --fs-body: 14px;
+  --lh-body: 1.55;
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-md: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 20px;
+
+  /* spacing / radius / motion */
+  --s1: 4px;  --s2: 8px;  --s3: 12px;  --s4: 16px;  --s5: 24px;  --s6: 32px;
+  --r1: 6px;   --r2: 10px;  --r3: 14px;  --rp: 999px;
+  --fast: 120ms; --mid: 200ms; --fade: 150ms;
+  --ease: cubic-bezier(.4, 0, .2, 1);
+
+  /* layout rails */
+  --header-h: 56px;
+  --rail-w: 52px;          /* thin left rail: Home · Integrations · Settings */
+  --sidebar-w: 270px;
+  --preview-h: 42vh;
+  --thread-w: 900px;
+  --indent: 13px;          /* tree indent per depth (Chunk 4) */
+
+  /* surfaces */
+  --bg: #0b0e14;
+  --bg2: #10141d;
+  --panel: #141926;
+  --panel2: #1a2032;
+  --panel3: #232b40;
+  --border: #222b3f;
+  --border2: #2f3a54;
+  --scrim: rgba(6, 8, 12, .66);
+  --shadow: 0 14px 38px rgba(0, 0, 0, .5);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, .35);
+
+  /* ink */
+  --text: #e7ecf6;
+  --dim: #97a3ba;
+  --faint: #647089;
+  --ink-on-accent: #08101f;
+
+  /* accents */
+  --accent: #5b8cff;
+  --accent2: #8b5cf6;
+  --accent-soft: #1d2b4d;
+  --accent-line: #3f5f9e;
+  --brand: #7dd3fc;
+
+  /* states */
+  --ok: #3fb98c;      --ok-soft: #142a24;
+  --warn: #e0a63c;    --warn-soft: #2b2113;
+  --err: #f0616d;     --err-soft: #2c1619;
+  --run: #4cc2ff;     --run-soft: #12283a;
+
+  /* code / diff */
+  --code-bg: #0d1119;
+  --add: #3fb98c;
+  --del: #f0616d;
+}
+
+:root[data-theme="light"] {
+  --bg: #f6f7fb;
+  --bg2: #eef0f6;
+  --panel: #ffffff;
+  --panel2: #f2f4f9;
+  --panel3: #e4e8f2;
+  --border: #d9deea;
+  --border2: #c2cadd;
+  --scrim: rgba(30, 36, 50, .38);
+  --shadow: 0 14px 38px rgba(22, 30, 48, .18);
+  --shadow-sm: 0 2px 10px rgba(22, 30, 48, .10);
+
+  --text: #1b2233;
+  --dim: #55617a;
+  --faint: #8390a8;
+  --ink-on-accent: #ffffff;
+
+  --accent: #2f6bd6;
+  --accent2: #6d3bd8;
+  --accent-soft: #e3ecff;
+  --accent-line: #b4c8f0;
+  --brand: #0b7fa8;
+
+  --ok: #157f57;      --ok-soft: #e0f5ec;
+  --warn: #96660f;    --warn-soft: #fbf0d8;
+  --err: #b62734;     --err-soft: #fbe6e8;
+  --run: #0a6f9c;     --run-soft: #dff0f9;
+
+  --code-bg: #f0f2f7;
+  --add: #157f57;
+  --del: #b62734;
+}
