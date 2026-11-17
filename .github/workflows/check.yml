@@ -1,0 +1,55 @@
+name: check
+
+# The whole of check.sh, on both platforms LOCODE runs on. It builds the shell,
+# tests the shell and runs the engine suite; nothing here needs a model, a key or
+# the network. Windows matters as much as Linux: the shell, the launchers and the
+# engine suite all touch platform-specific paths, and a green Ubuntu run says
+# nothing about `C:\`.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: check.sh (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      # One platform failing must not hide the other one's result.
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+
+      # check.sh refuses to run without these, and says so instead of guessing.
+      - name: engine dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements.txt
+
+      - name: shell dependencies
+        working-directory: ui
+        run: npm ci --no-audit --no-fund
+
+      # `shell: bash` is Git Bash on the Windows runner, so both jobs run the one
+      # script rather than a CI-only reimplementation of it.
+      - name: check.sh
+        shell: bash
+        run: ./check.sh
