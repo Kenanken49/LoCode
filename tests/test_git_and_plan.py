@@ -505,7 +505,8 @@ class SessionHistory(unittest.TestCase):
         self.assertEqual(len(opened.get("messages") or []), 1)
 
 
-FAKE_LLAMA = '''"""A llama-server stand-in: the two endpoints LOCODE probes and nothing else, so
+FAKE_LLAMA = '''#!/usr/bin/env python3
+"""A llama-server stand-in: the two endpoints LOCODE probes and nothing else, so
 the start/stop path is checked without weights, a build or a GPU."""
 import json
 import sys
