@@ -181,6 +181,18 @@ git config core.autocrlf input     # stop converting on the way in
 git checkout -- .                  # rewrite the working copies as LF
 ```
 
+**The executable bit.** Git on Windows has no executable bit to read: with `core.fileMode` off —
+the default for a fresh Windows clone — `chmod +x` is invisible to it and `git add` records a
+script as `100644`. It still runs in Git Bash, so nothing looks wrong until CI answers
+`./check.sh: Permission denied` and exits 126. A new script needs its mode recorded once, before
+it is committed:
+
+```bash
+git add scripts/new-thing.sh
+git update-index --chmod=+x scripts/new-thing.sh
+git ls-files -s scripts/new-thing.sh    # must print 100755
+```
+
 **Models on Windows.** llama.cpp publishes Windows builds: unzip a release and point `LLAMA_BIN` at
 the `llama-server.exe` inside it, with `LLAMA_MODELS` naming the folders that hold your `*.gguf`
 files. Both are read by Integrations → **Local model server**, which starts and stops the server
