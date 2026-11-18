@@ -7,6 +7,7 @@ name: check
 # nothing about `C:\`.
 on:
   push:
+    branches: [main]        # a PR branch runs once, as the pull_request below
   pull_request:
   workflow_dispatch:
 
@@ -15,7 +16,9 @@ permissions:
 
 concurrency:
   group: check-${{ github.ref }}
-  cancel-in-progress: true
+  # A superseded PR is cancelled; a push to main keeps its run, because a
+  # cancelled run is not a green one for the commit it was checking.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   check:
@@ -28,13 +31,13 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: "24"
           cache: npm
