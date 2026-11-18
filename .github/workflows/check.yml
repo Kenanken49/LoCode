@@ -43,13 +43,12 @@ jobs:
           cache: npm
           cache-dependency-path: ui/package-lock.json
 
-      # check.sh refuses to run without these, and says so instead of guessing.
-      - name: engine dependencies
-        run: python -m pip install --disable-pip-version-check -r requirements.txt
-
-      - name: shell dependencies
-        working-directory: ui
-        run: npm ci --no-audit --no-fund
+      # The install path the README gives people, on both platforms: it makes
+      # .venv, installs the engine's dependencies and builds the shell, which is
+      # the state check.sh insists on instead of guessing at it.
+      - name: install
+        shell: bash
+        run: ./install.sh
 
       # `shell: bash` is Git Bash on the Windows runner, so both jobs run the one
       # script rather than a CI-only reimplementation of it.
