@@ -505,8 +505,7 @@ class SessionHistory(unittest.TestCase):
         self.assertEqual(len(opened.get("messages") or []), 1)
 
 
-FAKE_LLAMA = '''#!/usr/bin/env python3
-"""A llama-server stand-in: the two endpoints LOCODE probes and nothing else, so
+FAKE_LLAMA = '''"""A llama-server stand-in: the two endpoints LOCODE probes and nothing else, so
 the start/stop path is checked without weights, a build or a GPU."""
 import json
 import sys
@@ -537,6 +536,34 @@ class Handler(BaseHTTPRequestHandler):
 ThreadingHTTPServer(("127.0.0.1", PORT), Handler).serve_forever()
 '''
 
+# Windows cannot exec a script that starts with a shebang ([WinError 193]), so the
+# same body is launched through a .cmd shim there and LLAMA_BIN points at the shim.
+# %~dp0 is the shim's own directory; %* passes -m and the flags through untouched.
+FAKE_LLAMA_SHIM = '@echo off\r\n"%s" "%%~dp0fake-llama-server.py" %%*\r\n'
+
+
+def pid_alive(pid: int) -> bool:
+    """Is that pid still there? os.kill(pid, 0) cannot answer it on Windows."""
+    if os.name == "nt":
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        handle = kernel32.OpenProcess(0x1000, False, pid)    # QUERY_LIMITED_INFORMATION
+        if not handle:
+            return False
+        try:
+            code = ctypes.c_ulong()
+            ok = kernel32.GetExitCodeProcess(handle, ctypes.byref(code))
+            return bool(ok) and code.value == 259            # STILL_ACTIVE
+        finally:
+            kernel32.CloseHandle(handle)
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
 
 class LocalModelControl(unittest.TestCase):
     """Integrations' start/stop: the engine spawns, discovers and stops the server.
@@ -549,9 +576,17 @@ class LocalModelControl(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.tmp = Path(tempfile.mkdtemp(prefix="locode-llama-"))
-        binary = cls.tmp / "fake-llama-server"
-        binary.write_text(FAKE_LLAMA)
-        binary.chmod(0o755)
+        # The engine spawns LLAMA_BIN as a program, so the stand-in has to be one:
+        # the script itself where the kernel honours its shebang, and a .cmd shim
+        # around the very same script on Windows, which has no shebang to honour.
+        (cls.tmp / "fake-llama-server.py").write_text(FAKE_LLAMA, encoding="utf-8")
+        if os.name == "nt":
+            binary = cls.tmp / "fake-llama-server.cmd"
+            binary.write_text(FAKE_LLAMA_SHIM % PYTHON, encoding="utf-8", newline="")
+        else:
+            binary = cls.tmp / "fake-llama-server"
+            binary.write_text(FAKE_LLAMA, encoding="utf-8")
+            binary.chmod(0o755)
         models = cls.tmp / "models"
         models.mkdir()
         cls.gguf = models / "fake-qwen.gguf"
@@ -616,11 +651,12 @@ class LocalModelControl(unittest.TestCase):
         self.assertTrue(state["running"], state)
         self.assertTrue(state["managed"], state)
         self.assertEqual(state["pid"], answer["pid"])
-        self.assertTrue(any(row.endswith("/models/fake-qwen.gguf")
+        # last two components, because the separator is not the same on both platforms
+        self.assertTrue(any(Path(row).parts[-2:] == ("models", "fake-qwen.gguf")
                             for row in state["served"]), state["served"])
         # the picker must see it without a restart: the cache is dropped on start
         models = self.engine.get("/api/models")[1]
-        self.assertTrue(any(row.endswith("/models/fake-qwen.gguf")
+        self.assertTrue(any(Path(row).parts[-2:] == ("models", "fake-qwen.gguf")
                             for row in models["names"]), models["names"])
 
     def test_52_start_again_reuses_the_running_one(self) -> None:
@@ -676,8 +712,7 @@ class LocalModelControl(unittest.TestCase):
         self.assertTrue(answer["stopped"], answer)
         self.assertFalse(answer["running"], answer)
         self.assertFalse(answer["managed"], answer)
-        with self.assertRaises(ProcessLookupError):
-            os.kill(int(pid), 0)
+        self.assertFalse(pid_alive(int(pid)), "pid %s outlived the stop" % pid)
         self.assertEqual(self.wait_ready(2.0)["health"], "unreachable")
 
     def test_54_stop_with_nothing_of_its_own_refuses(self) -> None:

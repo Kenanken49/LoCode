@@ -3000,9 +3000,27 @@ def _zombie(pid: int) -> bool:
 
 
 def _alive(pid: int) -> bool:
-    """Is that pid still there? Signal 0 asks the kernel and touches nothing."""
+    """Is that pid still there? Ask the kernel, touch nothing.
+
+    os.kill(pid, 0) answers that on POSIX; on Windows it is accepted and answers
+    nothing, so an exited server would look like a managed one forever. There the
+    kernel is asked to open the process and report its exit code instead: 259 is
+    STILL_ACTIVE, and a terminated process keeps the code it ended with.
+    """
     if pid <= 0:
         return False
+    if os.name == "nt":
+        import ctypes
+        kernel32 = ctypes.windll.kernel32
+        handle = kernel32.OpenProcess(0x1000, False, pid)   # QUERY_LIMITED_INFORMATION
+        if not handle:
+            return False                                    # no such process
+        try:
+            code = ctypes.c_ulong()
+            ok = kernel32.GetExitCodeProcess(handle, ctypes.byref(code))
+            return bool(ok) and code.value == 259
+        finally:
+            kernel32.CloseHandle(handle)
     try:
         os.kill(pid, 0)
     except ProcessLookupError:
@@ -3070,6 +3088,30 @@ def _same_model(left: str, right: str) -> bool:
     return bool(left and right) and Path(left).name == Path(right).name
 
 
+def _kill_tree(pid: int, sig: int) -> None:
+    """Stop that process and whatever it spawned, as far as this platform allows.
+
+    POSIX signals the group start_new_session made the pid lead, falling back to the
+    pid itself; Windows has neither groups nor SIGTERM, and `taskkill /T` is that
+    same request. Without this branch a stop on Windows could not run at all: os
+    .killpg does not exist there.
+    """
+    if os.name == "nt":
+        subprocess.run(["taskkill", "/F", "/T", "/PID", str(pid)],
+                       stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                       stderr=subprocess.DEVNULL)
+        return
+    try:
+        os.killpg(os.getpgid(pid), sig)
+        return
+    except (ProcessLookupError, PermissionError):
+        pass                    # no such group here: the pid alone is the rest of it
+    try:
+        os.kill(pid, sig)
+    except OSError:
+        pass
+
+
 async def _stop_llama_server() -> dict:
     """Stop the server this engine spawned. Anything else is left alone."""
     global _LLAMA_PROC
@@ -3079,21 +3121,12 @@ async def _stop_llama_server() -> dict:
                                      f"anything answering on {_llama_base()} belongs to another "
                                      "process and is left alone"}
     if _alive(pid):
-        try:
-            os.killpg(os.getpgid(pid), signal.SIGTERM)
-        except (ProcessLookupError, PermissionError):
-            try:
-                os.kill(pid, signal.SIGTERM)
-            except OSError:
-                pass
+        _kill_tree(pid, signal.SIGTERM)
         deadline = time.time() + 10
         while time.time() < deadline and _alive(pid):
             await asyncio.sleep(0.2)
         if _alive(pid):
-            try:
-                os.killpg(os.getpgid(pid), signal.SIGKILL)
-            except (ProcessLookupError, PermissionError, OSError):
-                pass
+            _kill_tree(pid, signal.SIGKILL)
             await asyncio.sleep(0.4)
     proc = _LLAMA_PROC
     if proc is not None and proc.pid == pid:
